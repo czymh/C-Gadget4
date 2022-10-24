@@ -1,0 +1,26 @@
+Notice here Omega0 only includes the OmegaCDM and OmegaBaryon
+Now, only the "hubble_function" used in the time_integration/driftfac.h and the "omega_z" in the subfind/subfind_so.cc have been modified the power spectrum of initial condition need to be scaled by hand. Do not use this to renormalize the input power.
+
+
+Added Parameters:
+
+M_nu_all
+Nur
+CMBTemperature
+DE_w0
+DE_wa
+
+Modified Files:
+"hubble_function" in "src/time_integration/driftfac.h"
+"omega_z" in "src/subfind/subfind_so.cc"
+"F1_Omega" and "F2_Omega" in "src/gravity/second_order_ics.cc" (Notice this is only used when SECOND_ORDER_LPT_ICS is activated for the initial condition generate by Adrian Jenkin's IC code and not been tested yet. )
+
+Now ngenic_f1_omega and ngenic_f2_omega has been rewritten for the Nu-w0waCDM universe.
+And D1, D2, f1 f2 for the 2LPT are calculated by ODE and assume the initial condition starting from matter dominated universe (D1-->a, dD1/dlna --> a, D2 --> -3/7*a*a, dD2/dlna --> 2D2 aini=0.00625).
+
+
+
+
+
+
+

@@ -1,0 +1,10 @@
+GSL_INCL   = -I/opt/gsl-2.5/include
+GSL_LIBS   = -L/opt/gsl-2.5/lib
+FFTW_INCL = -I/home/chenzhao/worksoftware/fftw-3.3.9/fftw-openmp-mpi-single/include
+FFTW_LIBS = -L/home/chenzhao/worksoftware/fftw-3.3.9/fftw-openmp-mpi-single/lib
+#FFTW_INCL  = -I/opt/fftw-3.3.8-openmp-mpi/include
+#FFTW_LIBS  = -L/opt/fftw-3.3.8-openmp-mpi/lib
+HDF5_INCL  = -I/opt/hdf5-1.12.0-parallel/include
+HDF5_LIBS  = -L/opt/hdf5-1.12.0-parallel/lib  
+#HWLOC_INCL = -I$(LIB_DIR)/hwloc/build/include
+#HWLOC_LIBS = -L$(LIB_DIR)/hwloc/build/lib
