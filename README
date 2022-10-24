@@ -1,6 +1,5 @@
 Notice here Omega0 only includes the OmegaCDM and OmegaBaryon
-Now, only the "hubble_function" used in the time_integration/driftfac.h and the "omega_z" in the subfind/subfind_so.cc have been modified the power spectrum of initial condition need to be scaled by hand. Do not use this to renormalize the input power.
-
+And Omeganu for massive neutrinos only included in the background of evolution detailed in 'hubble_function'.
 
 Added Parameters:
 
