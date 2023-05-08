@@ -30,7 +30,6 @@
 #include "../gravtree/gravtree.h"
 #include "../io/hdf5_util.h"
 #include "../io/io.h"
-#include "../io/snap_io.h"
 #include "../lightcone/lightcone.h"
 #include "../logs/logs.h"
 #include "../logs/timer.h"
@@ -40,6 +39,7 @@
 #include "../sort/peano.h"
 #include "../src/pm/pm.h"
 #include "../system/system.h"
+#include "../io/snap_io.h"
 
 /*!
  * \brief Function for field registering.
@@ -425,6 +425,13 @@ void snap_io::read_ic(const char *fname)
 #endif
 #endif
 
+#ifdef NGENIC
+  /* Here I change the mass of particles to match the Omega0 in the Param file.**/
+  double mass0 = All.Omega0 * 3 * All.Hubble * All.Hubble / (8 * M_PI * All.G) * All.BoxSize * All.BoxSize * All.BoxSize / Sp->TotNumPart;
+  mpi_printf("\nREADIC: MassTabel[1] has been modified from %g to %g!\n", All.MassTable[1], mass0);
+  All.MassTable[1] =  mass0;
+#endif
+
   TIMER_STOP(CPU_SNAPSHOT);
 }
 
@@ -438,6 +445,17 @@ void snap_io::snap_init_domain_mapping(void)
   Sp->RegionLen     = All.BoxSize;
   Sp->FacCoordToInt = pow(2.0, BITS_FOR_POSITIONS) / Sp->RegionLen;
   Sp->FacIntToCoord = Sp->RegionLen / pow(2.0, BITS_FOR_POSITIONS);
+
+#if defined(NGENIC) && !defined(CREATE_GRID)
+  if(All.RestartFlag == RST_BEGIN || All.RestartFlag == RST_CREATEICS)
+    {
+      // Make sure that the velocities are zero when a glass file is fed to IC creation
+      mpi_printf("READIC: Setting velocities in glass file to zero.\n");
+      for(int i = 0; i < Sp->NumPart; i++)
+        for(int k = 0; k < 3; k++)
+          Sp->P[i].Vel[k] = 0;
+    }
+#endif
 
 #else
 
@@ -758,7 +776,7 @@ void snap_io::read_file_header(const char *fname, int filenr, int readTask, int 
 #ifdef GADGET2_HEADER
   for(int i = 0; i < NTYPES_HEADER; i++)
     if(header.npartTotalLowWord[i] > 0)
-      header.npartTotal[i] = header.npartTotalLowWord[i];  // + (((long long)header.npartTotalHighWord[i]) << 32);
+      header.npartTotal[i] = header.npartTotalLowWord[i] + (((long long)header.npartTotalHighWord[i]) << 32);
 #endif
 
   if(Sp->TotNumPart == 0)

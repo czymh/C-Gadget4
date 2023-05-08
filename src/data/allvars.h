@@ -14,14 +14,13 @@
 #ifndef ALLVARS_H
 #define ALLVARS_H
 
-#include "gadgetconfig.h"
-
 #include <math.h>
 
 #include "../data/constants.h"
 #include "../data/dtypes.h"
 #include "../data/macros.h"
 #include "../io/parameters.h"
+#include "gadgetconfig.h"
 
 /** Data which is the SAME for all tasks (mostly code parameters read
  * from the parameter file).  Holding this data in a structure is
@@ -97,7 +96,6 @@ struct global_data_all_processes : public parameters
   double InitGasU;         /**< the same, but converted to thermal energy per unit mass */
   double MinEgySpec;       /**< the minimum allowed temperature expressed as energy per unit mass */
 
-
   /* some force counters  */
 
   long long TotNumOfForces;     /**< counts total number of force computations  */
@@ -137,7 +135,10 @@ struct global_data_all_processes : public parameters
   double Omega0;      /**< matter density in units of the critical density (at z=0) */
   double OmegaLambda; /**< vaccum energy density relative to crictical density (at z=0) */
   double OmegaBaryon; /**< baryon density in units of the critical density (at z=0) */
-  double M_nu_all;    /**< Total neutirno mass in units of eV >  */
+  double m_nu1;       /**< The first neutirno masses in units of eV >  */
+  double m_nu2;       /**< The second neutirno masses in units of eV >  */
+  double m_nu3;       /**< The third neutirno masses in units of eV >  */ 
+  int    Nncdm;       /**< The number of massive neutrino species> */
   double Nur;         /**< The effective number of ultra-relativistic components> */
   double CMBTemperature; /** <The temperature of CMB photo in units of K (at z=0) >*/
   double DE_w0;       /** < Dynamic dark energy: w(a) = w0 + wa(1-a)> */
@@ -294,6 +295,10 @@ struct global_data_all_processes : public parameters
 #ifdef LIGHTCONE_PARTICLES
   char LightConeDefinitionFile[MAXLEN_PATH];
   int LightconeFileCount;
+
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+  char LightConeOriginsFile[MAXLEN_PATH];
+#endif
 #endif
 
 #ifdef LIGHTCONE_MASSMAPS

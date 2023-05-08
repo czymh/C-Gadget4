@@ -129,6 +129,9 @@ void sim::hello(void)
  */
 void sim::begrun1(const char *parameterFile)
 {
+  if (All.Nncdm > 0) {
+    fastpm_fd_interp_init(FDinterp);
+  } /** initialize the Ftable integration */
   All.register_parameters();
 
   int errorFlag = All.read_parameter_file(parameterFile); /* ... read in parameters for this run on task 0*/
@@ -295,6 +298,9 @@ void sim::begrun2(void)
   if(LightCone.lightcone_massmap_report_boundaries())
     endrun();
 #endif
+  if(LightCone.lightcone_init_boxlist())
+    endrun();
+
   double linklength = 0;
 
 #ifdef FOF

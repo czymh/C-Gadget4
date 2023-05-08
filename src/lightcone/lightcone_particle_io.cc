@@ -232,25 +232,25 @@ void lightcone_particle_io::lightcone_save(int num, int conenr, bool reordered_f
   else
     sprintf(lname, "lightcone");
 
+  if(ThisTask == 0)
+    {
+      char buf[3 * MAXLEN_PATH];
+      sprintf(buf, "%s/%s_%02d", All.OutputDir, lname, cone);
+      mkdir(buf, 02755);
+    }
+  MPI_Barrier(Communicator);
+
   if(All.NumFilesPerSnapshot > 1)
     {
       if(ThisTask == 0)
         {
           char buf[3 * MAXLEN_PATH];
-          sprintf(buf, "%s/%s_%02d", All.OutputDir, lname, cone);
+          sprintf(buf, "%s/%s_%02d/conedir_%04d", All.OutputDir, lname, cone, num);
           mkdir(buf, 02755);
         }
       MPI_Barrier(Communicator);
     }
-
-  if(ThisTask == 0)
-    {
-      char buf[3 * MAXLEN_PATH];
-      sprintf(buf, "%s/%s_%02d/conedir_%04d", All.OutputDir, lname, cone, num);
-      mkdir(buf, 02755);
-    }
-  MPI_Barrier(Communicator);
-
+ 
   if(All.NumFilesPerSnapshot > 1)
     sprintf(buf, "%s/%s_%02d/conedir_%04d/%s_%04d", All.OutputDir, lname, cone, num, "conesnap", num);
   else
@@ -336,6 +336,12 @@ void lightcone_particle_io::fill_file_header(int writeTask, int lastTask, long l
     }
 
   header.num_files = All.NumFilesPerSnapshot;
+
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+  int oindex = LightCone->Cones[cone].OriginIndex;
+  for(int n = 0; n < 3; n++)
+    header.Origin[n] = LightCone->ConeOrigins[oindex].PosOrigin[n];
+#endif
 }
 
 void lightcone_particle_io::write_header_fields(hid_t handle)
@@ -355,6 +361,10 @@ void lightcone_particle_io::write_header_fields(hid_t handle)
       write_scalar_attribute(handle, "Npix_ThisFile", &header.Npix, H5T_NATIVE_UINT32);
       write_scalar_attribute(handle, "Npix_Total", &header.TotNpix, H5T_NATIVE_UINT32);
     }
+
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+  write_vector_attribute(handle, "Origin", header.Origin, H5T_NATIVE_DOUBLE, 3);
+#endif
 }
 
 void lightcone_particle_io::set_filenr_in_header(int numfiles) { header.num_files = numfiles; }

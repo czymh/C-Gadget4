@@ -30,18 +30,15 @@
 
 double sim::F1_Omega(double a)
 {
-  /** change the omega_a*/
-//   double omega_a = All.Omega0 / (All.Omega0 + a * (1 - All.Omega0 - All.OmegaLambda) + a * a * a * All.OmegaLambda);
-  double  omega_a = All.Omega0 / ( a * a * a ) / Driftfac.hubble_function(a) / Driftfac.hubble_function(a)
-  
+  double omega_a = All.Omega0 / (All.Omega0 + a * (1 - All.Omega0 - All.OmegaLambda) + a * a * a * All.OmegaLambda);
+
   return pow(omega_a, 5.0 / 9);
 }
 
 double sim::F2_Omega(double a)
 {
-//   double omega_a = All.Omega0 / (All.Omega0 + a * (1 - All.Omega0 - All.OmegaLambda) + a * a * a * All.OmegaLambda);
-  double omega_a = All.Omega0 / ( a * a * a ) / Driftfac.hubble_function(a) / Driftfac.hubble_function(a)
-    
+  double omega_a = All.Omega0 / (All.Omega0 + a * (1 - All.Omega0 - All.OmegaLambda) + a * a * a * All.OmegaLambda);
+
   return 2.0 * pow(omega_a, 6.0 / 11);
 }
 

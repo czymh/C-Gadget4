@@ -86,9 +86,9 @@ void ngenic::ngenic_displace_particles(void)
   gsl_rng_set(rnd_generator, All.NgenicSeed);
 
   ngenic_initialize_powerspectrum();
-
+  // mpi_printf("FFT init....");
   ngenic_initialize_ffts();
-
+  // mpi_printf("seedtable....");
   if(!(seedtable = (unsigned int *)Mem.mymalloc("seedtable", NGENIC * NGENIC * sizeof(unsigned int))))
     Terminate("could not allocate seed table");
 
@@ -139,7 +139,7 @@ void ngenic::ngenic_displace_particles(void)
 
       seedtable = (unsigned int *)((char *)Shmem.SharedMemBaseAddr[Shmem.Island_NTask - 1] + off);
     }
-
+  // mpi_printf("distribute ...");
   ngenic_distribute_particles();
 
   /* allocate displacement vectors */
@@ -1201,7 +1201,7 @@ void ngenic::print_spec(void)
 
           FILE *fd = fopen(buf, "w");
 
-          const int NSTEPS = 100;
+          const int NSTEPS = 50; // 100 --> 50
 
           for(int i = 0; i <= NSTEPS; i++)
             {

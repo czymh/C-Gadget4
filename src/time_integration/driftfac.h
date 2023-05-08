@@ -13,6 +13,7 @@
 #define DRIFTFAC_H
 
 #include <gsl/gsl_integration.h>
+#include <gsl/gsl_spline.h>
 #include <gsl/gsl_math.h>
 #include <math.h>
 #include <mpi.h>
@@ -23,9 +24,11 @@
 #include "../data/dtypes.h"
 #include "../main/main.h"
 #include "gadgetconfig.h"
+#include "./Ftable.h"
 
 /*Stefan-Boltzmann constant in cgs units*/
-#define  STEFAN_BOLTZMANN 5.670373e-5
+#define STEFAN_BOLTZMANN 5.670373e-5
+#define kB 8.617333262145e-5   // boltzman in eV/K
 
 class driftfac
 {
@@ -48,28 +51,91 @@ class driftfac
   {
     return ( 3*All.DE_wa - (1 + All.DE_w0 + All.DE_wa)/a ) * OmegaLTimesHubbleSquare(a);
   }
+  
+  static double Gamma_nu(void)
+  {
+    /* nu to photon temp ratio today */
+    /** Added Parameter Nncdm*/
+    /** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+    // This is consistent with CLASS but different to FastPM defs.
+    // double N_eff = All.Nur + All.Nncdm*1.0132 
+    return pow(4./11., 1./3.);
+  }
 
+  static double OmegaGamma(void)
+  {
+    /* Consider the Radiation: Omega_g = 4 \sigma_B T_{CMB}^4 8 \pi G / (3 c^3 H^2) */
+    return 4 * STEFAN_BOLTZMANN
+             * pow(All.CMBTemperature, 4)
+             * (8 * M_PI * GRAVITY)
+             / (3*pow(CLIGHT, 3)*HUBBLE*HUBBLE)
+             / (All.HubbleParam*All.HubbleParam);
+  } 
+
+  static double Fconst(int ncdm_id)
+  {
+      /* This is a cosmology dependent constant 
+         which is the argument divided by a of F, DF, DDF */
+      double T_nu = Gamma_nu()*All.CMBTemperature;
+      double m_nu_list[3] = {All.m_nu1, All.m_nu2, All.m_nu3};
+      return m_nu_list[ncdm_id] / (kB * T_nu);
+  }
+
+  static double getFtable(int F_id, double y)
+  {
+    /* Gets the interpolated value of Ftable[F_id] at y
+       F_id: 1 for F, 2 for F', 3 for F'' */
+    if (y > 0) {
+        // return getF(F_id, y);
+        return fastpm_do_fd_interp(FDinterp, F_id, y);
+    }else{
+        return 0; 
+    }
+  }
+ 
   static double Omega_ncdmTimesHubbleSquare(double a)
   {
-    return All.M_nu_all / 93.14 / (All.HubbleParam*All.HubbleParam) / (a * a * a);
+    /* Omega_ncdm(a) * E(a)^2 */
+    // return All.M_nu_all / 93.14 / (All.HubbleParam*All.HubbleParam) / (a * a * a); // only for the CDM-like
+    double A = 15. / pow(M_PI, 4) * pow(Gamma_nu(), 4) * OmegaGamma();     
+    double Fall = 0;
+    for (int i=0; i<All.Nncdm; i++) {
+        double Fci = Fconst(i); 
+        Fall += getFtable(1, Fci*a); //row 1 for F
+    }
+    return A / (a*a*a*a) * Fall;
+  }
+  
+  static double DOmega_ncdmTimesHubbleSquareDa(double a)
+  {
+    double A = 15. / pow(M_PI, 4) * pow(Gamma_nu(), 4) * OmegaGamma();
+    double OncdmESq = Omega_ncdmTimesHubbleSquare(a);
+    
+    double FcDF = 0;
+    for (int i=0; i<All.Nncdm; i++) {
+        double Fc = Fconst(i);
+        double DF = getFtable(2, Fc*a);
+        FcDF += Fc * DF;    //row 2 for F'
+    }
+    
+    return -4. / a * OncdmESq + A / (a*a*a*a) * FcDF;
   }
 
   static double Omega_RadiationTimesHubbleSquare(double a)
   {
-    /* Consider the Radiation: Omega_g = 4 \sigma_B T_{CMB}^4 8 \pi G / (3 c^3 H^2) */
-    double Omega_Gamma = 4 * STEFAN_BOLTZMANN
-                           * pow(All.CMBTemperature, 4)
-                           * (8 * M_PI * GRAVITY)
-                           / (3*pow(CLIGHT, 3)*HUBBLE*HUBBLE)
-                           / (All.HubbleParam*All.HubbleParam);
+    double Omega_Gamma = OmegaGamma();
     /* the ultra-relativistiv parts are treated as radiation*/
-    double fur = 7/8*pow((4/11), (4/3))*All.Nur;
+    double fur = 7./8. * pow(Gamma_nu(), 4) * All.Nur;
+    // double fur = 7./8. * pow(4./11., 1./3.) * All.Nur
     return (1+fur) * Omega_Gamma / (a * a * a * a);
   }
 
   /** Accually, hubble_function = E(a) = H(a)/h0 */
   static double hubble_function(double a)
   {
+    // if (All.Nncdm > 0){
+    //   fastpm_fd_interp_init(FDinterp);
+    // } /** initialize the Ftable integration */
     /** Omega0 = Omega_CDM + Omega_Baryon*/
     double hubble_a = All.Omega0 / (a * a * a);
     /* The Dynamic Dark Energy, equation of state:  w(a) = w0 + wa(1 -a)  */
@@ -83,6 +149,9 @@ class driftfac
     /** modified curvature */
     hubble_a += (1 - All.Omega0 - All.OmegaLambda - Omeganu) / (a * a);
     hubble_a = All.Hubble * sqrt(hubble_a);
+    // if (FDinterp){
+    //   fastpm_fd_interp_init(FDinterp);
+    // } /** free memory for stable*/
     return hubble_a;
   }
 
@@ -93,7 +162,7 @@ class driftfac
     return 0.5 / H_ct * (- 4 * Omega_RadiationTimesHubbleSquare(a) / a
                          - 3 * All.Omega0 / (a * a * a * a)
                          - 2 * (1 - All.Omega0 - All.OmegaLambda - Omeganu) / (a * a * a)
-                         - 4 * Omega_ncdmTimesHubbleSquare(a) / a
+                         + DOmega_ncdmTimesHubbleSquareDa(a)
                          + DOmegaLTimesHubbleSquareDa(a)
                         );
   }

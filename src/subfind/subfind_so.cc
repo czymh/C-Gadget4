@@ -31,7 +31,6 @@
 #include "../mpi_utils/generic_comm.h"
 #include "../subfind/subfind.h"
 #include "../system/system.h"
-#include "../time_integration/driftfac.h"
 
 static double *R200, *M200;
 
@@ -240,9 +239,8 @@ template <typename partset>
 double fof<partset>::subfind_get_overdensity_value(int type, double ascale)
 {
   double z = 1 / ascale - 1;
-  double allomega = Driftfac.hubble_function(ascale)*Driftfac.hubble_function(ascale)/All.Hubble/All.Hubble;
   double omegaz =
-      All.Omega0 * pow(1 + z, 3) / allomega;
+      All.Omega0 * pow(1 + z, 3) / (All.Omega0 * pow(1 + z, 3) + (1 - All.Omega0 - All.OmegaLambda) * pow(1 + z, 2) + All.OmegaLambda);
   double x = omegaz - 1;
 
   if(type == 0)

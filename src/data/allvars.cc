@@ -9,9 +9,12 @@
  *  \brief instance and code for an object dealing with global parameters and variables
  */
 
+// clang-format off
 #include "gadgetconfig.h"
+// clang-format on
 
 #include "../data/allvars.h"
+
 #include "../data/constants.h"
 #include "../data/dtypes.h"
 #include "../data/macros.h"
@@ -64,7 +67,10 @@ void global_data_all_processes::register_parameters(void)
   add_param("Omega0", &Omega0, PARAM_DOUBLE, PARAM_FIXED);
   add_param("OmegaBaryon", &OmegaBaryon, PARAM_DOUBLE, PARAM_FIXED);
   add_param("OmegaLambda", &OmegaLambda, PARAM_DOUBLE, PARAM_FIXED);
-  add_param("M_nu_all", &M_nu_all, PARAM_DOUBLE, PARAM_FIXED);
+  add_param("m_nu1", &m_nu1, PARAM_DOUBLE, PARAM_FIXED);
+  add_param("m_nu2", &m_nu2, PARAM_DOUBLE, PARAM_FIXED);
+  add_param("m_nu3", &m_nu3, PARAM_DOUBLE, PARAM_FIXED); 
+  add_param("Nncdm", &Nncdm, PARAM_INT, PARAM_FIXED); 
   add_param("Nur", &Nur, PARAM_DOUBLE, PARAM_FIXED);
   add_param("CMBTemperature", &CMBTemperature, PARAM_DOUBLE, PARAM_FIXED);
   add_param("DE_w0", &DE_w0, PARAM_DOUBLE, PARAM_FIXED);
@@ -158,6 +164,9 @@ void global_data_all_processes::register_parameters(void)
 
 #ifdef LIGHTCONE_PARTICLES
   add_param("LightConeDefinitionFile", LightConeDefinitionFile, PARAM_STRING, PARAM_CHANGEABLE);
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+  add_param("LightConeOriginsFile", LightConeOriginsFile, PARAM_STRING, PARAM_CHANGEABLE);
+#endif
 #endif
 
 #ifdef LIGHTCONE_MASSMAPS
