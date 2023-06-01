@@ -171,13 +171,21 @@ static ode_soln growth_ode_solve(double a)
                                                1);
     
     // assume matter domination
-    double aini = 0.00625;  // FIXME: need to make sure this is less than the starting a. For now using z=159.
+    //double aini = 0.00625;  // FIXME: need to make sure this is less than the starting a. For now using z=159.
+    //double yini[4];
+    //yini[0] = aini;
+    //yini[1] = aini;
+    //yini[2] = - 3./7. * aini*aini;
+    //yini[3] = 2 * yini[2];
+    // assume Radiation domination
+    double aini = 1e-7; // copied from pkdgrav3 cosmo.c 
+    double E_ct = Driftfac.hubble_function(aini)  / All.Hubble;
+    double RadMatEquivalence = Driftfac.Omega_RadiationTimesHubbleSquare(aini) / All.Omega0 * (aini * aini * aini);
     double yini[4];
-    yini[0] = aini;
-    yini[1] = aini;
-    yini[2] = - 3./7. * aini*aini;
-    yini[3] = 2 * yini[2];
-    
+    yini[0] = aini + 2/3*RadMatEquivalence;
+    yini[1] = E_ct * aini;
+    yini[2] = -2/3*RadMatEquivalence*aini;
+    yini[3] = -2/3*RadMatEquivalence*aini*E_ct;
     int status = gsl_odeiv2_driver_apply(drive, &aini, a, yini);
     if (status != GSL_SUCCESS) {
         printf("Growth ODE unsuccesful at a=%g.", a);

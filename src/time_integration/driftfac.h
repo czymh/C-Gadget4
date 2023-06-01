@@ -49,7 +49,7 @@ class driftfac
   }
   static double DOmegaLTimesHubbleSquareDa(double a)
   {
-    return ( 3*All.DE_wa - (1 + All.DE_w0 + All.DE_wa)/a ) * OmegaLTimesHubbleSquare(a);
+    return ( 3*All.DE_wa - 3*(1 + All.DE_w0 + All.DE_wa)/a ) * OmegaLTimesHubbleSquare(a);
   }
   
   static double Gamma_nu(void)
@@ -143,11 +143,13 @@ class driftfac
     /* Neutrino is only considered as the smooth component in the background  */
     /* only for the degenerate neutrino mass */
     hubble_a += Omega_ncdmTimesHubbleSquare(a);
-    double Omeganu = Omega_ncdmTimesHubbleSquare(1.0);
+    //double Omeganu = Omega_ncdmTimesHubbleSquare(1.0);
     /* All radiations including ultra-relativistic components (e.g. massless neutrinos)*/
     hubble_a += Omega_RadiationTimesHubbleSquare(a);
     /** modified curvature */
-    hubble_a += (1 - All.Omega0 - All.OmegaLambda - Omeganu) / (a * a);
+    //double Omegak = 1 - All.Omega0 - All.OmegaLambda - Omeganu - Omega_RadiationTimesHubbleSquare(1.0)
+    double Omegak = 0; // Set 0 
+    hubble_a += Omegak / (a * a);
     hubble_a = All.Hubble * sqrt(hubble_a);
     // if (FDinterp){
     //   fastpm_fd_interp_init(FDinterp);
@@ -158,10 +160,11 @@ class driftfac
   double DHubbleEaDa(double a)
   {
     double H_ct = hubble_function(a) / All.Hubble;
-    double Omeganu = Omega_ncdmTimesHubbleSquare(1.0);
+    //double Omeganu = Omega_ncdmTimesHubbleSquare(1.0);
+    double Omegak = 0; // 1 - All.Omega0 - All.OmegaLambda - Omeganu - Omega_RadiationTimesHubbleSquare(1.0)
     return 0.5 / H_ct * (- 4 * Omega_RadiationTimesHubbleSquare(a) / a
                          - 3 * All.Omega0 / (a * a * a * a)
-                         - 2 * (1 - All.Omega0 - All.OmegaLambda - Omeganu) / (a * a * a)
+                         - 2 * Omegak / (a * a * a)
                          + DOmega_ncdmTimesHubbleSquareDa(a)
                          + DOmegaLTimesHubbleSquareDa(a)
                         );

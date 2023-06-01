@@ -239,8 +239,10 @@ template <typename partset>
 double fof<partset>::subfind_get_overdensity_value(int type, double ascale)
 {
   double z = 1 / ascale - 1;
-  double omegaz =
-      All.Omega0 * pow(1 + z, 3) / (All.Omega0 * pow(1 + z, 3) + (1 - All.Omega0 - All.OmegaLambda) * pow(1 + z, 2) + All.OmegaLambda);
+//  double omegaz =
+//      All.Omega0 * pow(1 + z, 3) / (All.Omega0 * pow(1 + z, 3) + (1 - All.Omega0 - All.OmegaLambda) * pow(1 + z, 2) + All.OmegaLambda);
+  double E_ct = Driftfac.hubble_function(ascale)  / All.Hubble;
+  double omegaz =  All.Omega0 * pow(1 + z, 3) / E_ct / E_ct;
   double x = omegaz - 1;
 
   if(type == 0)

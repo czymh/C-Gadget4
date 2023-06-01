@@ -3,7 +3,7 @@
 
 #include <gsl/gsl_spline.h>
 
-#define Fsize (1000)
+#define Fsize (2000)
 extern double Ftable[3][Fsize];
 
 typedef struct FastPMFDInterp{

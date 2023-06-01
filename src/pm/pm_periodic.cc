@@ -2717,6 +2717,7 @@ void pm_periodic::pmforce_measure_powerspec(int flag, int *typeflag)
       fprintf(fd, "%g\n", All.BoxSize);
       fprintf(fd, "%d\n", (int)(PMGRID));
       if(All.ComovingIntegrationOn)
+        // Here we do not modify linear_growth(approximate form in pm_periodic.h beacause this is only used here!)
         fprintf(fd, "%g\n", All.ComovingIntegrationOn > 0 ? linear_growth_factor(All.Time, 1.0) : 1.0);
 
       for(int i = 0; i < BINS_PS; i++)

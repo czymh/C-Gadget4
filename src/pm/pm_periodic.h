@@ -217,7 +217,7 @@ class pm_periodic : public pm_mpi_fft
   double linear_growth(double a)
   {
     double hubble_a = sqrt(All.Omega0 / (a * a * a) + (1 - All.Omega0 - All.OmegaLambda) / (a * a) + All.OmegaLambda);
-
+    
     const int worksize = 100000;
 
     double result, abserr;
