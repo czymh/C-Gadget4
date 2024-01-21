@@ -1439,6 +1439,12 @@ way.
 
 -------
 
+**OLDSTYLE_SHARED_MEMORY_ALLOCATION**
+
+When activated reverts to old style memory allocation instead of using memfd_create()
+
+-------
+
 
 Testing and Debugging options                                    {#tests}
 =============================
