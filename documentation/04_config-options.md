@@ -404,11 +404,9 @@ expensive.
 
 This can be used to override the maximum radius out to which the
 short-range tree-force is evaluated in case the TreePM/FMM-PM
-algorithm is used. The conservative default value is 7.0 for this
-parameter, given in mesh-cells. Going much beyond 6.0 does however
-not yield much further improvement in the way the force matching region
-is treated, and reducing this value to 4.5 will give higher performance
-while being typically sufficiently accurate for most applications.
+algorithm is used. The default value is 4.5, given in
+mesh-cells. Going much beyond 6 should not yield further improvements
+in the way the force matching region is treated.
 
 -------
 
@@ -1238,6 +1236,16 @@ lightcone particle data before they are written to disk. Requires the
 This special option is only relevant for lightcone image creation, and
 (re)computes adaptive smoothing lengths as well as local velocity
 dispersions.
+
+-------
+
+**LIGHTCONE_MULTIPLE_ORIGINS**
+
+If this is enabled, origins of lightcones different from (0, 0, 0) can 
+be defined. Possible origins need to be listed in a separate file with 
+the name `LightConeOriginsFile`. The light cone definitions file then needs
+be augmented with a further number at the end of each lightcone 
+definition, and this serves as an index into the list of lightcone origins.
 
 -------
 

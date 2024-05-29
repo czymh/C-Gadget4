@@ -94,7 +94,7 @@ $(info EXEC: $(EXEC))
 $(info )
 
 
-PYTHON   = /usr/bin/python
+PYTHON   = python
 
 RESULT     := $(shell CONFIG=$(CONFIG) PYTHON=$(PYTHON) BUILD_DIR=$(BUILD_DIR) SRC_DIR=$(SRC_DIR) CURDIR=$(CURDIR) make -f buildsystem/Makefile.config)
 $(info $(RESULT))
@@ -279,8 +279,8 @@ INCL    += system/system.h system/pinning.h
 SUBDIRS += time_integration
 OBJS    += time_integration/driftfac.o time_integration/kicks.o \
            time_integration/predict.o time_integration/timestep.o \
-           time_integration/timestep_treebased.o
-INCL    += time_integration/timestep.h time_integration/driftfac.h
+           time_integration/timestep_treebased.o time_integration/Ftable.o
+INCL    += time_integration/timestep.h time_integration/driftfac.h time_integration/Ftable.h
 
 
 SUBDIRS += gravity

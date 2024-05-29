@@ -354,16 +354,33 @@ code start-up with the `GENERATE_GAS_IN_ICS` option.
 
 -------
 
-**M_nu_all**  0.00
+**m_nu1**  0.
 
-The total mass of massive neutrinos. Default is zero.
+The mass of the first massive neutrinos. Default is zero.
+
+-------
+
+**m_nu2**  0.
+
+The mass of the second massive neutrinos. Default is zero.
+
+-------
+
+**m_nu3**  0.
+
+The mass of the third massive neutrinos. Default is zero.
+
+-------
+
+**Nncdm**  0
+
+Total number of massive neutrinos species. Default is zero.
 
 -------
 
 **Nur**  3.046
 
 The effective number of ultra-relativistic components and Nur + 1.0132*Nncdm = Neff.
-
 
 -------
 
@@ -1126,6 +1143,16 @@ An example for a lightcone definition file could look like this:
 This would define a full-sky light cone from z=1 to z=0, and an octant
 covering positive x>0,y>0,z>0 from redshift z=1.5 to z=0.
 
+-------
+
+**LightConeOriginsFile**    lightcone_origins.txt
+
+Only when `LIGHTCONE_MULTIPLE_ORIGINS` is activated, this option is 
+required. One can then supply a list of coordinate triples, each of
+which is a possible origin of a lightcone as defined above. The
+invividual lightcone defintions from above then require one additional
+number for each lightcone at the end. This number is an index into the 
+listed origins, and thus selected the corresponding origin.
 
 -------
 
